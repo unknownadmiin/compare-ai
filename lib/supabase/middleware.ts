@@ -28,21 +28,20 @@ export async function updateSession(request: NextRequest) {
   if (code) {
     // Exchange the code for a session
     await supabase.auth.exchangeCodeForSession(code)
-    // Redirect to dashboard after successful auth
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+    // Redirect to home page after successful auth
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
   // Refresh session if expired - required for Server Components
   await supabase.auth.getSession()
 
-  const isPublicRoute =
-    request.nextUrl.pathname === "/" ||
+  // Protected routes - redirect to login if not authenticated
+  const isAuthRoute =
     request.nextUrl.pathname.startsWith("/auth/login") ||
     request.nextUrl.pathname.startsWith("/auth/sign-up") ||
     request.nextUrl.pathname === "/auth/callback"
 
-  // Only protect non-public routes
-  if (!isPublicRoute) {
+  if (!isAuthRoute) {
     const {
       data: { session },
     } = await supabase.auth.getSession()

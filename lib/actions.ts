@@ -6,14 +6,10 @@ import { redirect } from "next/navigation"
 export async function signInWithGoogle() {
   const supabase = createClient()
 
-  const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
-    ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-    : `${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"}/auth/callback`
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: redirectUrl,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
     },
   })
 
@@ -73,15 +69,11 @@ export async function signUpWithEmail(prevState: any, formData: FormData) {
   const supabase = createClient()
 
   try {
-    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
-      ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-      : `${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"}/auth/callback`
-
     const { error } = await supabase.auth.signUp({
       email: email.toString(),
       password: password.toString(),
       options: {
-        emailRedirectTo: redirectUrl,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
       },
     })
 
